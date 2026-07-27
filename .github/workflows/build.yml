@@ -23,6 +23,10 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
 
+    # Generate the gradlew wrapper on the fly if missing
+    - name: Generate Wrapper
+      run: gradle wrapper --gradle-version 8.5
+
     - name: Make gradlew executable
       run: chmod +x gradlew
 
