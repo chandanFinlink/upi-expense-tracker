@@ -14,10 +14,13 @@ import com.expensetracker.viewmodel.ViewModelFactory
 import com.expensetracker.ExpenseTrackerApplication
 import androidx.compose.ui.platform.LocalContext
 
+import androidx.navigation.NavController
+import com.expensetracker.navigation.Routes
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
 
 
     val application =
@@ -54,12 +57,32 @@ fun HomeScreen() {
 
     Scaffold(
 
+        floatingActionButton = {
+
+            FloatingActionButton(
+
+                onClick = {
+                    navController.navigate(Routes.AddTransaction.route)
+                }
+
+            ) {
+
+                Text("+")
+
+            }
+
+        },
+
         topBar = {
 
             TopAppBar(
+
                 title = {
+
                     Text("UPI Expense Tracker")
+
                 }
+
             )
 
         }

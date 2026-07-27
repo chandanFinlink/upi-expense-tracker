@@ -12,9 +12,13 @@ import com.expensetracker.database.entity.TransactionEntity
 import com.expensetracker.viewmodel.TransactionViewModel
 import com.expensetracker.viewmodel.TransactionViewModelFactory
 
+import androidx.navigation.NavController
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTransactionScreen() {
+fun AddTransactionScreen(
+    navController: NavController
+) {
 
     val application =
         LocalContext.current.applicationContext as ExpenseTrackerApplication
@@ -63,8 +67,7 @@ fun AddTransactionScreen() {
             Button(
                 onClick = {
 
-                    val value =
-                        amount.toDoubleOrNull() ?: return@Button
+                    val value = amount.toDoubleOrNull() ?: return@Button
 
                     viewModel.addTransaction(
                         TransactionEntity(
@@ -78,13 +81,13 @@ fun AddTransactionScreen() {
                     merchant = ""
                     amount = ""
 
+                    navController.popBackStack()
+
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Save Transaction")
             }
-
-        }
 
     }
 

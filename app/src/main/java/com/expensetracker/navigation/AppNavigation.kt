@@ -89,35 +89,30 @@ fun AppNavigation() {
 
         ) {
 
-            composable(Routes.Home.route) {
-
-                HomeScreen()
-
+           composable(Routes.Home.route) {
+                HomeScreen(navController)
             }
 
             composable(Routes.Transactions.route) {
-
                 TransactionsScreen()
-
             }
 
             composable(Routes.Budgets.route) {
-
                 BudgetsScreen()
-
             }
 
             composable(Routes.Analytics.route) {
-
                 AnalyticsScreen()
-
             }
 
             composable(Routes.Settings.route) {
-
                 SettingsScreen()
-
             }
+
+            composable(Routes.AddTransaction.route) {
+                AddTransactionScreen(navController)
+            }
+
 
         }
 

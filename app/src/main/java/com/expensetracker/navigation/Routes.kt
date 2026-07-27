@@ -2,13 +2,12 @@ package com.expensetracker.navigation
 
 sealed class Routes(val route: String) {
 
-    data object Home : Routes("home")
+    object Home : Routes("home")
+    object Transactions : Routes("transactions")
+    object Budgets : Routes("budgets")
+    object Analytics : Routes("analytics")
+    object Settings : Routes("settings")
 
-    data object Transactions : Routes("transactions")
+    object AddTransaction : Routes("add_transaction")
 
-    data object Budgets : Routes("budgets")
-
-    data object Analytics : Routes("analytics")
-
-    data object Settings : Routes("settings")
 }
