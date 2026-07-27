@@ -19,6 +19,7 @@ import com.expensetracker.features.budgets.BudgetsScreen
 import com.expensetracker.features.home.HomeScreen
 import com.expensetracker.features.settings.SettingsScreen
 import com.expensetracker.features.transactions.TransactionsScreen
+import com.expensetracker.features.transactions.AddTransactionScreen
 
 @Composable
 fun AppNavigation() {
