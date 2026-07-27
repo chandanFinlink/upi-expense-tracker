@@ -90,5 +90,6 @@ fun AddTransactionScreen(
             }
 
     }
+    }
 
 }
