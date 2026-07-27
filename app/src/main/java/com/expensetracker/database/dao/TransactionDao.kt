@@ -72,4 +72,31 @@ interface TransactionDao {
         referenceNumber: String
     ): Int
 
+    @Query("""
+    SELECT SUM(amount)
+    FROM transactions
+    WHERE transactionType='DEBIT'
+    AND date(transactionDate/1000,'unixepoch','localtime')
+    =
+    date('now','localtime')
+    """)
+    fun getTodayExpense(): Flow<Double?>
+
+
+    @Query("""
+    SELECT SUM(amount)
+    FROM transactions
+    WHERE transactionType='DEBIT'
+    AND strftime('%Y-%m',transactionDate/1000,'unixepoch','localtime')
+    =
+    strftime('%Y-%m','now','localtime')
+    """)
+    fun getMonthlyExpense(): Flow<Double?>
+
+    @Query("""
+    SELECT COUNT(*)
+    FROM transactions
+    """)
+    fun getTransactionCount(): Flow<Int>
+
 }

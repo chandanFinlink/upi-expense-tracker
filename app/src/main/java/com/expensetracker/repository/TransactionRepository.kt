@@ -30,6 +30,15 @@ class TransactionRepository(
 
     }
 
+    fun getTodayExpense() =
+    transactionDao.getTodayExpense()
+
+    fun getMonthlyExpense() =
+        transactionDao.getMonthlyExpense()
+
+    fun getTransactionCount() =
+        transactionDao.getTransactionCount()
+
 
     suspend fun insertTransaction(
         transaction: TransactionEntity

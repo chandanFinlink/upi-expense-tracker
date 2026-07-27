@@ -31,4 +31,32 @@ class HomeViewModel(
                 0.0
             )
 
+
+    val todayExpense =
+    transactionRepository
+        .getTodayExpense()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            0.0
+        )
+
+    val monthlyExpense =
+        transactionRepository
+            .getMonthlyExpense()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                0.0
+            )
+
+    val transactionCount =
+        transactionRepository
+            .getTransactionCount()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                0
+            )
+
 }

@@ -41,6 +41,16 @@ fun HomeScreen() {
     viewModel.recentTransactions.collectAsState()
 
 
+    val todayExpense by
+    viewModel.todayExpense.collectAsState()
+
+    val monthlyExpense by
+        viewModel.monthlyExpense.collectAsState()
+
+    val transactionCount by
+        viewModel.transactionCount.collectAsState()
+
+
 
     Scaffold(
 
@@ -70,21 +80,50 @@ fun HomeScreen() {
         ) {
 
 
-            Text(
-                text = "Total Expense",
-                style = MaterialTheme.typography.titleMedium
-            )
+            Card(
+    modifier = Modifier.fillMaxWidth()
+) {
 
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ) {
 
-            Text(
-                text = "₹${totalExpense ?: 0}",
-                style = MaterialTheme.typography.headlineLarge
-            )
+                Text(
+                    text = "This Month",
+                    style = MaterialTheme.typography.titleMedium
+                )
 
+                Text(
+                    text = "₹${monthlyExpense ?: 0.0}",
+                    style = MaterialTheme.typography.headlineMedium
+                )
 
-            Text(
-                text = "Recent Transactions"
-            )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Today's Expense"
+                )
+
+                Text(
+                    text = "₹${todayExpense ?: 0.0}"
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Total Transactions"
+                )
+
+                Text(
+                    text = transactionCount.toString()
+                )
+            }
+        }
+
+        Text(
+            text = "Recent Transactions",
+            style = MaterialTheme.typography.titleMedium
+        )
 
 
             if(transactions.isEmpty()) {
