@@ -13,6 +13,8 @@ lifecycle = "2.8.3"
 material = "1.11.0"
 
 core = "1.12.0"
+ksp = "1.9.22-1.0.17"
+
 
 # ---------- Plugins ----------
 
@@ -21,6 +23,7 @@ core = "1.12.0"
 android-application = { id = "com.android.application", version.ref = "agp" }
 
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
 # ---------- Libraries ----------
 
