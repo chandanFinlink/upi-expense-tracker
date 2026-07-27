@@ -4,7 +4,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
-import android.util.Log
+import com.expensetracker.ExpenseTrackerApplication
+import com.expensetracker.parser.UpiSmsParser
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class SMSReceiver : BroadcastReceiver() {
@@ -16,11 +20,27 @@ class SMSReceiver : BroadcastReceiver() {
     ) {
 
 
-        if (intent.action == Telephony.Sms.Intents.SMS_RECEIVED_ACTION) {
+        if (
+            intent.action ==
+            Telephony.Sms.Intents.SMS_RECEIVED_ACTION
+        ) {
 
 
             val messages =
-                Telephony.Sms.Intents.getMessagesFromIntent(intent)
+                Telephony.Sms.Intents
+                    .getMessagesFromIntent(intent)
+
+
+
+            val application =
+                context.applicationContext
+                        as ExpenseTrackerApplication
+
+
+
+            val repository =
+                application.transactionRepository
+
 
 
             messages.forEach { sms ->
@@ -34,10 +54,31 @@ class SMSReceiver : BroadcastReceiver() {
                     sms.messageBody
 
 
-                Log.d(
-                    "SMS_RECEIVER",
-                    "Sender: $sender Body: $body"
-                )
+
+                val transaction =
+                    UpiSmsParser.parse(
+                        smsBody = body,
+                        sender = sender
+                    )
+
+
+
+                if (transaction != null) {
+
+
+                    CoroutineScope(
+                        Dispatchers.IO
+                    ).launch {
+
+
+                        repository.insertTransaction(
+                            transaction
+                        )
+
+
+                    }
+
+                }
 
 
             }

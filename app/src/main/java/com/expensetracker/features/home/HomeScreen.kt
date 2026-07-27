@@ -1,5 +1,6 @@
 package com.expensetracker.features.home
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -14,6 +15,7 @@ import com.expensetracker.ExpenseTrackerApplication
 import androidx.compose.ui.platform.LocalContext
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
 
