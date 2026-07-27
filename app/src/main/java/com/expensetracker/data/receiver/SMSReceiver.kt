@@ -1,25 +1,25 @@
-package com.expensetracker.data.receiver
+package com.expensetracker.data.local
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.provider.Telephony
-import android.util.Log
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 
-class SMSReceiver : BroadcastReceiver() {
+@Dao
+interface TransactionDao {
 
-    override fun onReceive(context: Context?, intent: Intent?) {
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(
+        transaction: TransactionEntity
+    )
 
-        if (intent?.action != Telephony.Sms.Intents.SMS_RECEIVED_ACTION)
-            return
+    @Query(
+        "SELECT * FROM transactions ORDER BY timestamp DESC"
+    )
+    suspend fun getAll(): List<TransactionEntity>
 
-        val messages = Telephony.Sms.Intents.getMessagesFromIntent(intent)
-
-        for (sms in messages) {
-            Log.d(
-                "SMSReceiver",
-                "Sender=${sms.displayOriginatingAddress}\nMessage=${sms.messageBody}"
-            )
-        }
-    }
+    @Query(
+        "DELETE FROM transactions"
+    )
+    suspend fun deleteAll()
 }
