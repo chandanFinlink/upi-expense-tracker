@@ -1,0 +1,64 @@
+package com.expensetracker.database.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import com.expensetracker.database.entity.TransactionEntity
+import kotlinx.coroutines.flow.Flow
+
+
+@Dao
+interface TransactionDao {
+
+
+    @Insert
+    suspend fun insertTransaction(
+        transaction: TransactionEntity
+    ): Long
+
+
+    @Insert
+    suspend fun insertTransactions(
+        transactions: List<TransactionEntity>
+    )
+
+
+    @Query(
+        """
+        SELECT * 
+        FROM transactions
+        ORDER BY transactionDate DESC
+        """
+    )
+    fun getAllTransactions(): Flow<List<TransactionEntity>>
+
+
+    @Query(
+        """
+        SELECT *
+        FROM transactions
+        ORDER BY transactionDate DESC
+        LIMIT 10
+        """
+    )
+    fun getRecentTransactions(): Flow<List<TransactionEntity>>
+
+
+    @Query(
+        """
+        SELECT SUM(amount)
+        FROM transactions
+        WHERE transactionType = 'DEBIT'
+        """
+    )
+    fun getTotalExpense(): Flow<Double?>
+
+
+    @Query(
+        """
+        DELETE FROM transactions
+        """
+    )
+    suspend fun deleteAllTransactions()
+
+}
