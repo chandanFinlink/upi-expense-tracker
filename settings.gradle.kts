@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "UPI Expense Tracker"
+rootProject.name = "upi-expense-tracker"
 include(":app")
