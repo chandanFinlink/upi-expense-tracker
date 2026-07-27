@@ -3,6 +3,8 @@
 
     <style
         name="Theme.ExpenseTracker"
-        parent="Theme.Material3.DayNight.NoActionBar" />
+        parent="Theme.Material3.DayNight">
+
+    </style>
 
 </resources>
