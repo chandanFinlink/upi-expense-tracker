@@ -1,23 +1,44 @@
 package com.expensetracker.features.home
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.expensetracker.viewmodel.HomeViewModel
+import com.expensetracker.viewmodel.ViewModelFactory
+import com.expensetracker.ExpenseTrackerApplication
+import androidx.compose.ui.platform.LocalContext
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun HomeScreen() {
+
+
+    val application =
+        LocalContext.current.applicationContext
+                as ExpenseTrackerApplication
+
+
+    val viewModel: HomeViewModel =
+        viewModel(
+            factory = ViewModelFactory(
+                application.transactionRepository
+            )
+        )
+
+
+    val totalExpense by
+    viewModel.totalExpense.collectAsState()
+
+
+    val transactions by
+    viewModel.recentTransactions.collectAsState()
+
+
 
     Scaffold(
 
@@ -33,59 +54,56 @@ fun HomeScreen() {
 
     ) { padding ->
 
+
         Column(
 
-            modifier = Modifier
-                .fillMaxSize()
+            modifier =
+            Modifier
                 .padding(padding)
                 .padding(16.dp),
 
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement =
+            Arrangement.spacedBy(16.dp)
 
         ) {
 
+
             Text(
-                text = "Good Morning 👋",
-                style = MaterialTheme.typography.headlineMedium
+                text = "Total Expense",
+                style = MaterialTheme.typography.titleMedium
             )
 
-            Card(
-                colors = CardDefaults.cardColors()
-            ) {
 
-                Column(
-                    modifier = Modifier.padding(20.dp)
-                ) {
+            Text(
+                text = "₹${totalExpense ?: 0}",
+                style = MaterialTheme.typography.headlineLarge
+            )
 
-                    Text(
-                        text = "Total Expenses",
-                        style = MaterialTheme.typography.titleMedium
-                    )
 
-                    Text(
-                        text = "₹0.00",
-                        style = MaterialTheme.typography.headlineLarge
-                    )
+            Text(
+                text = "Recent Transactions"
+            )
 
-                }
 
-            }
+            if(transactions.isEmpty()) {
 
-            Card {
 
-                Column(
-                    modifier = Modifier.padding(20.dp)
-                ) {
+                Text(
+                    text = "No transactions yet"
+                )
+
+
+            } else {
+
+
+                transactions.forEach {
 
                     Text(
-                        text = "Recent Transactions"
-                    )
-
-                    Text(
-                        text = "No transactions found."
+                        text = "${it.merchant} ₹${it.amount}"
                     )
 
                 }
+
 
             }
 
