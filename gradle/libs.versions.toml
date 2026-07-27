@@ -1,11 +1,41 @@
 [versions]
+
 agp = "8.2.2"
 kotlin = "1.9.22"
+
 composeBom = "2024.02.00"
 
+activityCompose = "1.9.0"
+navigationCompose = "2.8.0"
+
+lifecycle = "2.8.3"
+
+material = "1.11.0"
+
+core = "1.12.0"
+
+# ---------- Plugins ----------
+
 [plugins]
+
 android-application = { id = "com.android.application", version.ref = "agp" }
+
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
+# ---------- Libraries ----------
+
 [libraries]
+
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
+
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "core" }
+
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+
+navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+
+lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle" }
+
+material = { module = "com.google.android.material:material", version.ref = "material" }
