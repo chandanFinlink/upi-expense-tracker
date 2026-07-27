@@ -55,4 +55,17 @@ class TransactionRepository(
 
     }
 
+    suspend fun transactionExists(
+    referenceNumber: String?
+    ): Boolean {
+
+        if (referenceNumber.isNullOrBlank()) {
+            return false
+        }
+
+        return transactionDao.countByReferenceNumber(
+            referenceNumber
+        ) > 0
+    }
+
 }

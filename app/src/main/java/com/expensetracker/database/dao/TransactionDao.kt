@@ -61,4 +61,15 @@ interface TransactionDao {
     )
     suspend fun deleteAllTransactions()
 
+    @Query(
+    """
+    SELECT COUNT(*)
+    FROM transactions
+    WHERE referenceNumber = :referenceNumber
+    """
+    )
+    suspend fun countByReferenceNumber(
+        referenceNumber: String
+    ): Int
+
 }
