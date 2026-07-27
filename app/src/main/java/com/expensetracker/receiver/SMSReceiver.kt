@@ -9,6 +9,7 @@ import com.expensetracker.parser.UpiSmsParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import com.expensetracker.sms.SmsProcessingService
 
 
 class SMSReceiver : BroadcastReceiver() {
@@ -38,8 +39,9 @@ class SMSReceiver : BroadcastReceiver() {
 
 
 
-            val repository =
+            val smsProcessingService = SmsProcessingService(
                 application.transactionRepository
+                 )
 
 
 
@@ -71,8 +73,9 @@ class SMSReceiver : BroadcastReceiver() {
                     ).launch {
 
 
-                        repository.insertTransaction(
-                            transaction
+                       smsProcessingService.processSms(
+                            sender = sender,
+                            body = body
                         )
 
 
