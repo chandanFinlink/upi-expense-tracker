@@ -153,8 +153,10 @@ fun HomeScreen(navController: NavController) {
 
                 transactions.forEach {
 
+                   val merchantName = it.merchant ?: "Unknown"
+
                     Text(
-                        text = "${it.merchant ?: "Unknown"} • ${currencyFormatter.format(it.amount)}"
+                        text = merchantName + " • " + currencyFormatter.format(it.amount)
                     )
 
                 }
