@@ -10,6 +10,10 @@ import androidx.core.content.ContextCompat
 import com.expensetracker.navigation.AppNavigation
 import com.expensetracker.ui.theme.ExpenseTrackerTheme
 
+import androidx.lifecycle.lifecycleScope
+import com.expensetracker.sms.SmsImporter
+import kotlinx.coroutines.launch
+
 class MainActivity : ComponentActivity() {
 
     private val smsPermissionLauncher =
@@ -21,6 +25,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         requestSmsPermissions()
+
+        val application = application as ExpenseTrackerApplication
+
+        lifecycleScope.launch {
+            SmsImporter(
+                context = this@MainActivity,
+                repository = application.transactionRepository
+            ).importInbox()
+
+        }
 
         setContent {
             ExpenseTrackerTheme {
