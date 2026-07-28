@@ -57,22 +57,6 @@ fun HomeScreen(navController: NavController) {
 
     Scaffold(
 
-        floatingActionButton = {
-
-            FloatingActionButton(
-
-                onClick = {
-                    navController.navigate(Routes.AddTransaction.route)
-                }
-
-            ) {
-
-                Text("+")
-
-            }
-
-        },
-
         topBar = {
 
             TopAppBar(

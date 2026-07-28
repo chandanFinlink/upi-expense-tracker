@@ -21,12 +21,34 @@ import com.expensetracker.features.settings.SettingsScreen
 import com.expensetracker.features.transactions.TransactionsScreen
 import com.expensetracker.features.transactions.AddTransactionScreen
 
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+
 @Composable
 fun AppNavigation() {
 
     val navController = rememberNavController()
-
     Scaffold(
+
+        floatingActionButton = {
+
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
+            if (currentRoute == Routes.Home.route) {
+
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(Routes.AddTransaction.route)
+                    },
+                    elevation = FloatingActionButtonDefaults.elevation()
+                ) {
+                    Text("+")
+                }
+
+            }
+
+        },
 
         bottomBar = {
 
