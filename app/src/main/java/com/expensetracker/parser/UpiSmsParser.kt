@@ -52,16 +52,48 @@ object UpiSmsParser {
 
         val amount = extractAmount(sms) ?: return null
 
+        // Bank of Baroda UPI debit
+        if (
+            lower.contains("dr. from a/c") &&
+            lower.contains("cr. to")
+        ) {
+
+            return TransactionEntity(
+                amount = amount,
+                merchant = extractMerchant(sms) ?: "Unknown",
+                transactionType = "DEBIT",
+                transactionDate = smsTime,
+                bankName = sender,
+                smsBody = sms,
+                smsAddress = sender,
+                referenceNumber = extractReference(sms)
+            )
+        }
+
         if (amount <= 0.0 || amount > 1000000.0) {
             return null
         }
 
-        val type =
-            if (lower.contains("credited") ||
-                lower.contains("received") ||
-                lower.contains("cr.")
-            ) "CREDIT"
-            else "DEBIT"
+        val type = when {
+
+            // Debit SMS
+            lower.contains(" dr.") ||
+            lower.contains(" dr ") ||
+            lower.contains("debited") ||
+            lower.contains("sent") ||
+            lower.contains("paid") ||
+            lower.contains("withdrawn") ->
+                "DEBIT"
+
+            // Credit SMS
+            lower.contains("credit alert") ||
+            lower.contains("credited") ||
+            lower.contains("received") ->
+                "CREDIT"
+
+            else ->
+                "DEBIT"
+        }
 
         return TransactionEntity(
             amount = amount,
@@ -195,10 +227,10 @@ object UpiSmsParser {
             ),
 
             // BOB
-            Regex(
-                "Cr\\.\\s+to\\s+(.+?)\\.\\s+Ref",
+           Regex(
+                "Cr\\.\\s+to\\s+(.+?)(?:\\.\\s+Ref|\\s+Ref)",
                 RegexOption.IGNORE_CASE
-            )
+           )
 
         )
 
