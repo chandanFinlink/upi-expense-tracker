@@ -2,180 +2,149 @@ package com.expensetracker.parser
 
 import com.expensetracker.database.entity.TransactionEntity
 
-
 object UpiSmsParser {
-
 
     fun parse(
         smsBody: String,
         sender: String?
     ): TransactionEntity? {
 
+        val sms = smsBody.trim()
+        val lower = sms.lowercase()
 
-        val lowerCaseSms =
-            smsBody.lowercase()
-
-
-
-        // Ignore unrelated SMS
-
-        if (
-            !(
-                lowerCaseSms.contains("upi") ||
-                lowerCaseSms.contains("debited") ||
-                lowerCaseSms.contains("credited") ||
-                lowerCaseSms.contains("paid")
-            )
-        ) {
-
-            return null
-
-        }
-
-
-
-        val amount =
-            extractAmount(smsBody)
-
-
-
-        if (amount == null) {
-
-            return null
-
-        }
-
-
-
-        val transactionType =
-
-            if (
-                lowerCaseSms.contains("credited")
-            ) {
-
-                "CREDIT"
-
-            } else {
-
-                "DEBIT"
-
-            }
-
-
-
-        return TransactionEntity(
-
-            amount = amount,
-
-            merchant =
-                extractMerchant(smsBody),
-
-            transactionType = transactionType,
-
-            transactionDate =
-                System.currentTimeMillis(),
-
-            bankName = sender,
-
-            smsBody = smsBody,
-
-            smsAddress = sender,
-
-            referenceNumber =
-                extractReferenceNumber(smsBody)
-
+        // Ignore OTP / promotional / incomplete messages
+        val ignoreWords = listOf(
+            "otp",
+            "one time password",
+            "authorize debit",
+            "login",
+            "click here",
+            "autopay",
+            "mandate",
+            "reminder",
+            "offer",
+            "cashback",
+            "reward",
+            "failed",
+            "pending",
+            "declined",
+            "reversed"
         )
 
+        if (ignoreWords.any { lower.contains(it) }) {
+            return null
+        }
+
+        val success =
+            lower.contains("sent") ||
+            lower.contains("paid") ||
+            lower.contains("debited") ||
+            lower.contains("dr.") ||
+            lower.contains("dr ") ||
+            lower.contains("credited") ||
+            lower.contains("cr.") ||
+            lower.contains("received")
+
+        if (!success) {
+            return null
+        }
+
+        val amount = extractAmount(sms) ?: return null
+
+        val type =
+            if (lower.contains("credited") ||
+                lower.contains("received") ||
+                lower.contains("cr.")
+            ) "CREDIT"
+            else "DEBIT"
+
+        return TransactionEntity(
+            amount = amount,
+            merchant = extractMerchant(sms) ?: "Unknown",
+            transactionType = type,
+            transactionDate = System.currentTimeMillis(),
+            bankName = sender,
+            smsBody = sms,
+            smsAddress = sender,
+            referenceNumber = extractReference(sms)
+        )
     }
 
-
-
-    private fun extractAmount(
-        text: String
-    ): Double? {
-
-
-        val regex =
-            Regex(
-                "(rs\\.?|inr|₹)\\s?([0-9,]+(\\.[0-9]+)?)",
-                RegexOption.IGNORE_CASE
-            )
-
-
-        val match =
-            regex.find(text)
-
-
-
-        return match
-            ?.groupValues
-            ?.get(2)
-            ?.replace(",", "")
-            ?.toDoubleOrNull()
-
-    }
-
-
-
-    private fun extractReferenceNumber(
-        text: String
-    ): String? {
-
-
-        val regex =
-            Regex(
-                "(ref|reference|txn|transaction)[^0-9]*([0-9]{6,})",
-                RegexOption.IGNORE_CASE
-            )
-
-
-        return regex.find(text)
-            ?.groupValues
-            ?.get(2)
-
-    }
-
-
-
-    private fun extractMerchant(
-        text: String
-    ): String? {
-
+    private fun extractAmount(text: String): Double? {
 
         val patterns = listOf(
 
-            Regex(
-                "to ([A-Za-z0-9 @._-]+)",
-                RegexOption.IGNORE_CASE
-            ),
+            Regex("Rs\\.?\\s*([0-9,]+(?:\\.[0-9]{1,2})?)", RegexOption.IGNORE_CASE),
 
-            Regex(
-                "paid to ([A-Za-z0-9 @._-]+)",
-                RegexOption.IGNORE_CASE
-            )
+            Regex("INR\\s*([0-9,]+(?:\\.[0-9]{1,2})?)", RegexOption.IGNORE_CASE),
+
+            Regex("₹\\s*([0-9,]+(?:\\.[0-9]{1,2})?)")
 
         )
 
+        for (regex in patterns) {
 
+            val value = regex.find(text)?.groupValues?.get(1)
 
-        for(pattern in patterns) {
-
-            val result =
-                pattern.find(text)
-
-
-            if(result != null) {
-
-                return result.groupValues[1]
-                    .trim()
-
+            if (value != null) {
+                return value.replace(",", "").toDoubleOrNull()
             }
-
         }
 
-
         return null
-
     }
 
+    private fun extractReference(text: String): String? {
+
+        val patterns = listOf(
+
+            Regex("UPI\\s*Ref\\s*[: ]\\s*(\\d+)", RegexOption.IGNORE_CASE),
+
+            Regex("Ref\\s*[: ]\\s*(\\d+)", RegexOption.IGNORE_CASE),
+
+            Regex("txn\\s*ID\\s*(\\d+)", RegexOption.IGNORE_CASE),
+
+            Regex("UTR\\s*[: ]\\s*(\\d+)", RegexOption.IGNORE_CASE)
+
+        )
+
+        for (regex in patterns) {
+
+            val value = regex.find(text)?.groupValues?.get(1)
+
+            if (value != null)
+                return value
+        }
+
+        return null
+    }
+
+    private fun extractMerchant(text: String): String? {
+
+        val patterns = listOf(
+
+            Regex("to\\s+(.+?)\\s+on", RegexOption.IGNORE_CASE),
+
+            Regex("to\\s+(.+?)\\.", RegexOption.IGNORE_CASE),
+
+            Regex("paid to\\s+(.+?)\\.", RegexOption.IGNORE_CASE),
+
+            Regex("Cr\\. to\\s+(.+?)\\.", RegexOption.IGNORE_CASE)
+
+        )
+
+        for (regex in patterns) {
+
+            val match = regex.find(text)
+
+            if (match != null) {
+
+                return match.groupValues[1]
+                    .trim()
+                    .replace("\n", " ")
+            }
+        }
+
+        return null
+    }
 }

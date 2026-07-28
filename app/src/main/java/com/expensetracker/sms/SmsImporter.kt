@@ -6,6 +6,7 @@ import android.provider.Telephony
 import com.expensetracker.repository.TransactionRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.Calendar
 
 class SmsImporter(
     private val context: Context,
@@ -22,11 +23,20 @@ class SmsImporter(
             Telephony.Sms.DATE
         )
 
+        val calendar = Calendar.getInstance()
+
+        calendar.set(Calendar.HOUR_OF_DAY, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+
+        val startOfDay = calendar.timeInMillis
+
         val cursor = context.contentResolver.query(
             uri,
             projection,
-            null,
-            null,
+            "${Telephony.Sms.DATE} >= ?",
+            arrayOf(startOfDay.toString()),
             "${Telephony.Sms.DATE} DESC"
         ) ?: return@withContext
 
