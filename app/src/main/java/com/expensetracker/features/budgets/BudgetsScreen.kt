@@ -1,20 +1,7 @@
 package com.expensetracker.features.budgets
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,6 +11,8 @@ import com.expensetracker.ExpenseTrackerApplication
 import com.expensetracker.database.entity.BudgetEntity
 import com.expensetracker.viewmodel.BudgetViewModel
 import com.expensetracker.viewmodel.BudgetViewModelFactory
+import java.text.NumberFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,89 +29,244 @@ fun BudgetsScreen() {
             )
         )
 
-    val budgets by viewModel.budgets.collectAsState()
+    val budget by viewModel.budget.collectAsState()
+    val monthlyExpense by viewModel.monthlyExpense.collectAsState()
 
-    var monthlyLimit by remember { mutableStateOf("") }
+    var budgetAmount by remember {
+        mutableStateOf("")
+    }
+
+    var alertPercentage by remember {
+        mutableStateOf("80")
+    }
+
+    LaunchedEffect(budget) {
+
+        budget?.let {
+
+            budgetAmount = it.monthlyLimit.toString()
+            alertPercentage = it.alertPercentage.toString()
+
+        }
+
+    }
+
+    val formatter =
+        NumberFormat.getCurrencyInstance(
+            Locale("en", "IN")
+        )
+
+    val totalBudget =
+        budget?.monthlyLimit ?: 0.0
+
+    val spent =
+        monthlyExpense ?: 0.0
+
+    val remaining =
+        totalBudget - spent
+
+    val progress =
+        if (totalBudget > 0)
+            (spent / totalBudget).toFloat()
+        else
+            0f
 
     Scaffold(
 
         topBar = {
+
             TopAppBar(
                 title = {
-                    Text("Budgets")
+                    Text("Monthly Budget")
                 }
             )
+
         }
 
     ) { padding ->
 
         Column(
+
             modifier = Modifier
-                .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+
+            verticalArrangement =
+                Arrangement.spacedBy(16.dp)
+
         ) {
 
             OutlinedTextField(
-                value = monthlyLimit,
-                onValueChange = { monthlyLimit = it },
-                label = { Text("Monthly Budget") },
+
+                value = budgetAmount,
+
+                onValueChange = {
+                    budgetAmount = it
+                },
+
+                label = {
+                    Text("Budget Amount")
+                },
+
                 modifier = Modifier.fillMaxWidth()
+
             )
 
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
+            OutlinedTextField(
 
-                    val amount =
-                        monthlyLimit.toDoubleOrNull() ?: return@Button
+                value = alertPercentage,
 
-                    viewModel.saveBudget(
+                onValueChange = {
+                    alertPercentage = it
+                },
 
-                        BudgetEntity(
-                            categoryId = 0,
-                            monthlyLimit = amount,
-                            month = "2026-07"
-                        )
+                label = {
+                    Text("Alert Percentage")
+                },
 
-                    )
+                modifier = Modifier.fillMaxWidth()
 
-                    monthlyLimit = ""
+            )
 
-                }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
 
-                Text("Save Budget")
+                Button(
+
+                    modifier = Modifier.weight(1f),
+
+                    onClick = {
+
+                        val amount =
+                            budgetAmount.toDoubleOrNull()
+                                ?: return@Button
+
+                        val alert =
+                            alertPercentage.toIntOrNull()
+                                ?: 80
+
+                        if (budget == null) {
+
+                            viewModel.saveBudget(
+
+                                BudgetEntity(
+                                    categoryId = 0,
+                                    monthlyLimit = amount,
+                                    alertPercentage = alert,
+                                    month = "Monthly"
+                                )
+
+                            )
+
+                        } else {
+
+                            viewModel.updateBudget(
+                                budget!!.id,
+                                amount,
+                                alert
+                            )
+
+                        }
+
+                    }
+
+                ) {
+
+                    Text(
+                        if (budget == null)
+                            "Save"
+                        else
+                            "Update"
+                    )
+
+                }
+
+                if (budget != null) {
+
+                    OutlinedButton(
+
+                        modifier = Modifier.weight(1f),
+
+                        onClick = {
+
+                            viewModel.deleteBudget(
+                                budget!!.id
+                            )
+
+                            budgetAmount = ""
+                            alertPercentage = "80"
+
+                        }
+
+                    ) {
+
+                        Text("Delete")
+
+                    }
+
+                }
 
             }
 
-            LazyColumn {
+            if (budget != null) {
 
-                items(budgets) { budget ->
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
 
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp)
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
 
-                        Column(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
+                        Text(
+                            "Monthly Budget",
+                            style = MaterialTheme.typography.titleMedium
+                        )
 
-                            Text(
-                                "Month : ${budget.month}",
-                                style = MaterialTheme.typography.titleMedium
-                            )
+                        Spacer(Modifier.height(8.dp))
 
-                            Text(
-                                "Budget : ₹${budget.monthlyLimit}"
-                            )
+                        Text(
+                            "Budget : ${formatter.format(totalBudget)}"
+                        )
 
-                            Text(
-                                "Alert : ${budget.alertPercentage}%"
-                            )
+                        Text(
+                            "Spent : ${formatter.format(spent)}"
+                        )
+
+                        Text(
+                            "Remaining : ${formatter.format(remaining)}"
+                        )
+
+                        Spacer(Modifier.height(12.dp))
+
+                        LinearProgressIndicator(
+                            progress = {
+                                progress.coerceIn(0f,1f)
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Spacer(Modifier.height(12.dp))
+
+                        val percent =
+                            progress * 100
+
+                        when {
+
+                            percent >= 100f ->
+                                Text(
+                                    "Over Budget",
+                                    color = MaterialTheme.colorScheme.error
+                                )
+
+                            percent >= budget!!.alertPercentage ->
+                                Text(
+                                    "Warning (${budget!!.alertPercentage}%)"
+                                )
+
+                            else ->
+                                Text("Within Budget")
 
                         }
 
