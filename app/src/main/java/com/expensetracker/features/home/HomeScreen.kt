@@ -17,6 +17,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.expensetracker.navigation.Routes
 
+import java.text.NumberFormat
+import java.util.Locale
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,22 +39,26 @@ fun HomeScreen(navController: NavController) {
         )
 
 
-    val totalExpense by
+    val totalExpense by 
     viewModel.totalExpense.collectAsState()
 
 
-    val transactions by
+    val transactions by 
     viewModel.recentTransactions.collectAsState()
 
 
-    val todayExpense by
+    val todayExpense by 
     viewModel.todayExpense.collectAsState()
 
-    val monthlyExpense by
+    val monthlyExpense by 
         viewModel.monthlyExpense.collectAsState()
 
-    val transactionCount by
+    val transactionCount by 
         viewModel.transactionCount.collectAsState()
+
+        val currencyFormatter = NumberFormat.getCurrencyInstance(
+            Locale("en", "IN")
+        )
 
 
 
@@ -101,7 +108,7 @@ fun HomeScreen(navController: NavController) {
                 )
 
                 Text(
-                    text = "₹${monthlyExpense ?: 0.0}",
+                    text = currencyFormatter.format(monthlyExpense ?: 0.0)
                     style = MaterialTheme.typography.headlineMedium
                 )
 
@@ -112,7 +119,7 @@ fun HomeScreen(navController: NavController) {
                 )
 
                 Text(
-                    text = "₹${todayExpense ?: 0.0}"
+                    text = currencyFormatter.format(todayExpense ?: 0.0)
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -147,7 +154,7 @@ fun HomeScreen(navController: NavController) {
                 transactions.forEach {
 
                     Text(
-                        text = "${it.merchant} ₹${it.amount}"
+                        text = "${it.merchant ?: "Unknown"} • ${currencyFormatter.format(it.amount)}"
                     )
 
                 }

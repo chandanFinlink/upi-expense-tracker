@@ -29,10 +29,6 @@ class MainActivity : ComponentActivity() {
         val application = application as ExpenseTrackerApplication
 
         lifecycleScope.launch {
-            application.transactionRepository.deleteAllTransactions()
-        }
-
-        lifecycleScope.launch {
             SmsImporter(
                 context = this@MainActivity,
                 repository = application.transactionRepository

@@ -5,9 +5,10 @@ import com.expensetracker.database.entity.TransactionEntity
 object UpiSmsParser {
 
     fun parse(
-        smsBody: String,
-        sender: String?
-    ): TransactionEntity? {
+            smsBody: String,
+            sender: String?,
+            smsTime: Long
+        ): TransactionEntity? {
 
         val sms = smsBody.trim()
         val lower = sms.lowercase()
@@ -51,6 +52,10 @@ object UpiSmsParser {
 
         val amount = extractAmount(sms) ?: return null
 
+        if (amount <= 0.0 || amount > 1000000.0) {
+            return null
+        }
+
         val type =
             if (lower.contains("credited") ||
                 lower.contains("received") ||
@@ -62,7 +67,7 @@ object UpiSmsParser {
             amount = amount,
             merchant = extractMerchant(sms) ?: "Unknown",
             transactionType = type,
-            transactionDate = System.currentTimeMillis(),
+            transactionDate = smsTime,
             bankName = sender,
             smsBody = sms,
             smsAddress = sender,

@@ -7,16 +7,17 @@ class SmsProcessingService(
     private val repository: TransactionRepository
 ) {
 
-    suspend fun processSms(
+ suspend fun processSms(
     sender: String?,
-    body: String
+    body: String,
+    smsTime: Long
 ) {
 
-        val transaction =
-            UpiSmsParser.parse(
-                smsBody = body,
-                sender = sender
-            ) ?: return
+        UpiSmsParser.parse(
+            smsBody = body,
+            sender = sender,
+            smsTime = smsTime
+        ) ?: return
 
         val exists =
             repository.transactionExists(

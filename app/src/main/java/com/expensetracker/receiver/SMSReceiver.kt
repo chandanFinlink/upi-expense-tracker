@@ -57,11 +57,12 @@ class SMSReceiver : BroadcastReceiver() {
 
 
 
-                val transaction =
-                    UpiSmsParser.parse(
-                        smsBody = body,
-                        sender = sender
-                    )
+               val transaction =
+                UpiSmsParser.parse(
+                    smsBody = body,
+                    sender = sender,
+                    smsTime = sms.timestampMillis
+                )
 
 
 
@@ -75,7 +76,8 @@ class SMSReceiver : BroadcastReceiver() {
 
                        smsProcessingService.processSms(
                             sender = sender,
-                            body = body
+                            body = body,
+                            smsTime = sms.timestampMillis
                         )
 
 

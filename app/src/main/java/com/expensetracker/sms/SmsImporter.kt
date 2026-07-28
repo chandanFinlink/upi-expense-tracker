@@ -42,25 +42,23 @@ class SmsImporter(
 
         cursor.use {
 
-            val addressIndex =
-                cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS)
+            val addressIndex = cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS)
 
-            val bodyIndex =
-                cursor.getColumnIndexOrThrow(Telephony.Sms.BODY)
+            val bodyIndex = cursor.getColumnIndexOrThrow(Telephony.Sms.BODY)
+            val dateIndex = cursor.getColumnIndexOrThrow( Telephony.Sms.DATE )
 
             while (cursor.moveToNext()) {
 
-                val sender =
-                    cursor.getString(addressIndex)
+                val sender = cursor.getString(addressIndex)
 
-                val body =
-                    cursor.getString(bodyIndex)
+                val body = cursor.getString(bodyIndex)
+                val smsTime = cursor.getLong(dateIndex)
 
-                SmsProcessingService(repository)
-                    .processSms(
-                        sender = sender,
-                        body = body
-                    )
+                SmsProcessingService(repository).processSms(
+                    sender = sender,
+                    body = body,
+                    smsTime = smsTime
+                )
 
             }
 
