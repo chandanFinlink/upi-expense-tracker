@@ -143,28 +143,58 @@ object UpiSmsParser {
 
         val patterns = listOf(
 
-            Regex("to\\s+(.+?)\\s+on", RegexOption.IGNORE_CASE),
+            // Paid to Shop Name
+            Regex(
+                "paid\\s+to\\s+([A-Za-z0-9 .@&_-]+)",
+                RegexOption.IGNORE_CASE
+            ),
 
-            Regex("to\\s+(.+?)\\.", RegexOption.IGNORE_CASE),
+            // To Shop Name
+            Regex(
+                "\\bto\\b\\s+([A-Za-z0-9 .@&_-]+)",
+                RegexOption.IGNORE_CASE
+            ),
 
-            Regex("paid to\\s+(.+?)\\.", RegexOption.IGNORE_CASE),
+            // HDFC
+            Regex(
+                "To\\s+(.+?)\\s+On",
+                RegexOption.IGNORE_CASE
+            ),
 
-            Regex("Cr\\. to\\s+(.+?)\\.", RegexOption.IGNORE_CASE)
+            // Kotak
+            Regex(
+                "to\\s+(.+?)\\s+on",
+                RegexOption.IGNORE_CASE
+            ),
+
+            // BOB
+            Regex(
+                "Cr\\.\\s+to\\s+(.+?)\\.\\s+Ref",
+                RegexOption.IGNORE_CASE
+            )
 
         )
 
-        for (regex in patterns) {
+        for (pattern in patterns) {
 
-            val match = regex.find(text)
+            val match = pattern.find(text)
 
             if (match != null) {
 
-                return match.groupValues[1]
+                var merchant = match.groupValues[1].trim()
+
+                merchant = merchant
+                    .replace(Regex("\\s+"), " ")
+                    .replace(".", "")
                     .trim()
-                    .replace("\n", " ")
+
+                return merchant
+
             }
+
         }
 
-        return null
+        return "Unknown"
+
     }
 }
