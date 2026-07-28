@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.expensetracker.BuildConfig
 import com.expensetracker.ExpenseTrackerApplication
 import com.expensetracker.viewmodel.SettingsViewModel
 import com.expensetracker.viewmodel.SettingsViewModelFactory
@@ -125,7 +124,7 @@ fun SettingsScreen() {
                         style = MaterialTheme.typography.titleMedium
                     )
 
-                    Text(BuildConfig.VERSION_NAME)
+                    Text("1.0")
 
                 }
 
