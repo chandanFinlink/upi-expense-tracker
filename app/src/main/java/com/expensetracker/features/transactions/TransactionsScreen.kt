@@ -26,6 +26,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+import androidx.compose.material3.AssistChip
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen() {
@@ -89,7 +93,10 @@ fun TransactionsScreen() {
                     .padding(padding)
             ) {
 
-                items(transactions) { transaction ->
+                items(
+                        items = transactions,
+                        key = { it.id }
+                    ) { transaction ->
 
                     Card(
                         modifier = Modifier
@@ -108,30 +115,42 @@ fun TransactionsScreen() {
                                 style = MaterialTheme.typography.titleMedium
                             )
 
-                            Text(
-                                text = currency.format(transaction.amount)
-                            )
-
-                            Text(
-                                text = transaction.transactionType
-                            )
+                            Spacer(modifier = Modifier.height(8.dp))
 
                             Text(
                                 text = formatter.format(
                                     Date(transaction.transactionDate)
-                                )
+                                ),
+                                style = MaterialTheme.typography.bodySmall
                             )
 
-                            transaction.bankName?.let {
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                                Text(
-                                    text = it
-                                )
+                            Text(
+                                text = transaction.bankName ?: "Unknown Bank",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
 
-                            }
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Text(
+                                text = currency.format(transaction.amount),
+                                style = MaterialTheme.typography.headlineSmall,
+                                color =
+                                    if (transaction.transactionType == "DEBIT")
+                                        MaterialTheme.colorScheme.error
+                                    else
+                                        MaterialTheme.colorScheme.primary
+                            )
+
+                            AssistChip(
+                                onClick = { },
+                                label = {
+                                    Text(transaction.transactionType)
+                                }
+                            )
 
                         }
-
                     }
 
                 }
