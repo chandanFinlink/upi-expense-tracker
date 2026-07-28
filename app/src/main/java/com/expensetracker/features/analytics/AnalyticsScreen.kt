@@ -1,5 +1,6 @@
 package com.expensetracker.features.analytics
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,8 @@ import java.text.NumberFormat
 import java.util.Locale
 
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyticsScreen() {
 
