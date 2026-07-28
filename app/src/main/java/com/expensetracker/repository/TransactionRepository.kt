@@ -39,6 +39,15 @@ class TransactionRepository(
     fun getTransactionCount() =
         transactionDao.getTransactionCount()
 
+    fun getTotalIncome() =
+    transactionDao.getTotalIncome()
+
+    fun getDebitCount() =
+        transactionDao.getDebitCount()
+
+    fun getCreditCount() =
+        transactionDao.getCreditCount()
+
 
     suspend fun insertTransaction(
         transaction: TransactionEntity

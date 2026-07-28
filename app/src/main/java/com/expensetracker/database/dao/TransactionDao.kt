@@ -99,4 +99,26 @@ interface TransactionDao {
     """)
     fun getTransactionCount(): Flow<Int>
 
+
+    @Query("""
+    SELECT SUM(amount)
+    FROM transactions
+    WHERE transactionType='CREDIT'
+    """)
+    fun getTotalIncome(): Flow<Double?>
+
+    @Query("""
+    SELECT COUNT(*)
+    FROM transactions
+    WHERE transactionType='DEBIT'
+    """)
+    fun getDebitCount(): Flow<Int>
+
+    @Query("""
+    SELECT COUNT(*)
+    FROM transactions
+    WHERE transactionType='CREDIT'
+    """)
+    fun getCreditCount(): Flow<Int>
+
 }
