@@ -75,28 +75,43 @@ object UpiSmsParser {
         )
     }
 
-    private fun extractAmount(text: String): Double? {
+    private fun extractAmount( text: String ): Double? {
 
         val patterns = listOf(
 
-            Regex("Rs\\.?\\s*([0-9,]+(?:\\.[0-9]{1,2})?)", RegexOption.IGNORE_CASE),
+            Regex(
+                "(?:Rs\\.?|INR|₹)\\s*([0-9,]+(?:\\.[0-9]{1,2})?)",
+                RegexOption.IGNORE_CASE
+            ),
 
-            Regex("INR\\s*([0-9,]+(?:\\.[0-9]{1,2})?)", RegexOption.IGNORE_CASE),
+            Regex(
+                "Sent\\s+(?:Rs\\.?|INR|₹)?\\s*([0-9,]+(?:\\.[0-9]{1,2})?)",
+                RegexOption.IGNORE_CASE
+            ),
 
-            Regex("₹\\s*([0-9,]+(?:\\.[0-9]{1,2})?)")
+            Regex(
+                "debited\\s+by\\s+(?:Rs\\.?|INR|₹)?\\s*([0-9,]+(?:\\.[0-9]{1,2})?)",
+                RegexOption.IGNORE_CASE
+            )
 
         )
 
-        for (regex in patterns) {
+        patterns.forEach { regex ->
 
-            val value = regex.find(text)?.groupValues?.get(1)
+            val match = regex.find(text)
 
-            if (value != null) {
-                return value.replace(",", "").toDoubleOrNull()
+            if (match != null) {
+
+                return match.groupValues[1]
+                    .replace(",", "")
+                    .toDoubleOrNull()
+
             }
+
         }
 
         return null
+
     }
 
     private fun extractReference(text: String): String? {
