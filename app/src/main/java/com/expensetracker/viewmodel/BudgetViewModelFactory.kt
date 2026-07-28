@@ -3,9 +3,11 @@ package com.expensetracker.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.expensetracker.repository.BudgetRepository
+import com.expensetracker.repository.TransactionRepository
 
 class BudgetViewModelFactory(
-    private val repository: BudgetRepository
+    private val budgetRepository: BudgetRepository,
+    private val transactionRepository: TransactionRepository
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -13,7 +15,11 @@ class BudgetViewModelFactory(
         modelClass: Class<T>
     ): T {
 
-        return BudgetViewModel(repository) as T
+        return BudgetViewModel(
+            budgetRepository,
+            transactionRepository
+        ) as T
 
     }
+
 }

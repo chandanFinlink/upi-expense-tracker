@@ -35,7 +35,8 @@ fun BudgetsScreen() {
     val viewModel: BudgetViewModel =
         viewModel(
             factory = BudgetViewModelFactory(
-                application.budgetRepository
+                application.budgetRepository,
+                application.transactionRepository
             )
         )
 

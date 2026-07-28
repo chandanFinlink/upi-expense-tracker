@@ -37,4 +37,25 @@ interface BudgetDao {
         id: Long
     )
 
+    @Query("""
+    SELECT *
+    FROM budgets
+    LIMIT 1
+    """)
+    fun getCurrentBudget(): Flow<BudgetEntity?>
+
+
+    @Query("""
+    UPDATE budgets
+    SET
+    monthlyLimit = :monthlyLimit,
+    alertPercentage = :alertPercentage
+    WHERE id = :id
+    """)
+    suspend fun updateBudget(
+        id: Long,
+        monthlyLimit: Double,
+        alertPercentage: Int
+    )
+
 }

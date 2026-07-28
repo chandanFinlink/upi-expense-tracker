@@ -34,4 +34,22 @@ class BudgetRepository(
 
     }
 
+    fun getCurrentBudget() =
+    budgetDao.getCurrentBudget()
+
+
+    suspend fun updateBudget(
+        id: Long,
+        monthlyLimit: Double,
+        alertPercentage: Int
+    ) {
+
+        budgetDao.updateBudget(
+            id,
+            monthlyLimit,
+            alertPercentage
+        )
+
+    }
+
 }
