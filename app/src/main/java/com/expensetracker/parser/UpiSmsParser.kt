@@ -118,22 +118,49 @@ object UpiSmsParser {
 
         val patterns = listOf(
 
-            Regex("UPI\\s*Ref\\s*[: ]\\s*(\\d+)", RegexOption.IGNORE_CASE),
+            // UPI Ref 610522265608
+            Regex(
+                "UPI\\s*Ref\\.?\\s*:?\\s*([A-Za-z0-9]{6,})",
+                RegexOption.IGNORE_CASE
+            ),
 
-            Regex("Ref\\s*[: ]\\s*(\\d+)", RegexOption.IGNORE_CASE),
+            // Ref:941794178716 / Ref 875946162590
+            Regex(
+                "\\bRef\\.?\\s*:?\\s*([A-Za-z0-9]{6,})",
+                RegexOption.IGNORE_CASE
+            ),
 
-            Regex("txn\\s*ID\\s*(\\d+)", RegexOption.IGNORE_CASE),
+            // Reference 123456789
+            Regex(
+                "\\bReference\\b\\s*:?\\s*([A-Za-z0-9]{6,})",
+                RegexOption.IGNORE_CASE
+            ),
 
-            Regex("UTR\\s*[: ]\\s*(\\d+)", RegexOption.IGNORE_CASE)
+            // txn ID 302408216011
+            Regex(
+                "txn\\s*ID\\s*:?\\s*([A-Za-z0-9]{6,})",
+                RegexOption.IGNORE_CASE
+            ),
+
+            // Transaction ID 302408216011
+            Regex(
+                "Transaction\\s*ID\\s*:?\\s*([A-Za-z0-9]{6,})",
+                RegexOption.IGNORE_CASE
+            ),
+
+            // UTR
+            Regex(
+                "UTR\\s*:?\\s*([A-Za-z0-9]{6,})",
+                RegexOption.IGNORE_CASE
+            )
 
         )
 
         for (regex in patterns) {
-
-            val value = regex.find(text)?.groupValues?.get(1)
-
-            if (value != null)
-                return value
+            val match = regex.find(text)
+            if (match != null) {
+                return match.groupValues[1].trim()
+            }
         }
 
         return null
