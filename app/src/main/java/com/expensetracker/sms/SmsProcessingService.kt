@@ -11,14 +11,14 @@ class SmsProcessingService(
         sender: String?,
         body: String,
         smsTime: Long
-    ) {
+    ): Boolean {
 
         val transaction =
             UpiSmsParser.parse(
                 smsBody = body,
                 sender = sender,
                 smsTime = smsTime
-            ) ?: return
+            ) ?: return false
 
         val exists =
             repository.transactionExists(
@@ -26,9 +26,11 @@ class SmsProcessingService(
             )
 
         if (exists) {
-            return
+            return false
         }
 
         repository.insertTransaction(transaction)
+
+        return true
     }
 }

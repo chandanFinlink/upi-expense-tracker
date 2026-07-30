@@ -13,7 +13,10 @@ class SmsImporter(
     private val repository: TransactionRepository
 ) {
 
-    suspend fun importInbox() = withContext(Dispatchers.IO) {
+    suspend fun importLastDays(
+        days: Int = 90,
+        onProgress: ((processed: Int, imported: Int) -> Unit)? = null
+    ) = withContext(Dispatchers.IO) {
 
         val uri = Uri.parse("content://sms/inbox")
 
@@ -25,39 +28,67 @@ class SmsImporter(
 
         val calendar = Calendar.getInstance()
 
-        calendar.set(Calendar.HOUR_OF_DAY, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.set(Calendar.MILLISECOND, 0)
+        calendar.add(Calendar.DAY_OF_YEAR, -days)
 
-        val startOfDay = calendar.timeInMillis
+        val startTime = calendar.timeInMillis
 
         val cursor = context.contentResolver.query(
             uri,
             projection,
             "${Telephony.Sms.DATE} >= ?",
-            arrayOf(startOfDay.toString()),
+            arrayOf(startTime.toString()),
             "${Telephony.Sms.DATE} DESC"
         ) ?: return@withContext
 
+        var processed = 0
+        var imported = 0
+
+        val smsService = SmsProcessingService(repository)
+
         cursor.use {
 
-            val addressIndex = cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS)
+            val addressIndex =
+                cursor.getColumnIndexOrThrow(
+                    Telephony.Sms.ADDRESS
+                )
 
-            val bodyIndex = cursor.getColumnIndexOrThrow(Telephony.Sms.BODY)
-            val dateIndex = cursor.getColumnIndexOrThrow( Telephony.Sms.DATE )
+            val bodyIndex =
+                cursor.getColumnIndexOrThrow(
+                    Telephony.Sms.BODY
+                )
+
+            val dateIndex =
+                cursor.getColumnIndexOrThrow(
+                    Telephony.Sms.DATE
+                )
 
             while (cursor.moveToNext()) {
 
-                val sender = cursor.getString(addressIndex)
+                processed++
 
-                val body = cursor.getString(bodyIndex)
-                val smsTime = cursor.getLong(dateIndex)
+                val sender =
+                    cursor.getString(addressIndex)
 
-                SmsProcessingService(repository).processSms(
-                    sender = sender,
-                    body = body,
-                    smsTime = smsTime
+                val body =
+                    cursor.getString(bodyIndex)
+
+                val smsTime =
+                    cursor.getLong(dateIndex)
+
+                val inserted =
+                    smsService.processSms(
+                        sender = sender,
+                        body = body,
+                        smsTime = smsTime
+                    )
+
+                if (inserted) {
+                    imported++
+                }
+
+                onProgress?.invoke(
+                    processed,
+                    imported
                 )
 
             }
