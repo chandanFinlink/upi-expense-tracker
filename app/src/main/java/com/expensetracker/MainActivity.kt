@@ -13,6 +13,7 @@ import com.expensetracker.ui.theme.ExpenseTrackerTheme
 import androidx.lifecycle.lifecycleScope
 import com.expensetracker.sms.SmsImporter
 import kotlinx.coroutines.launch
+import android.content.Context
 
 class MainActivity : ComponentActivity() {
 
@@ -28,14 +29,29 @@ class MainActivity : ComponentActivity() {
 
         val application = application as ExpenseTrackerApplication
 
-        lifecycleScope.launch {
-
-            SmsImporter(
-                context = this@MainActivity,
-                repository = application.transactionRepository
-            ).importLastDays(
-                days = 90
+        val prefs =
+            getSharedPreferences(
+                "expense_tracker_prefs",
+                Context.MODE_PRIVATE
             )
+
+        val initialImportDone =
+            prefs.getBoolean(
+                "initial_import_done",
+                false
+            )
+
+        if (!initialImportDone) {
+
+            lifecycleScope.launch {
+
+                SmsImporter(
+                    context = this@MainActivity,
+                    repository = application.transactionRepository
+                ).importLastDays(90)
+
+                prefs.edit().putBoolean("initial_import_done",true).apply()
+            }
         }
 
         setContent {
