@@ -32,6 +32,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.PaddingValues
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -81,10 +85,11 @@ fun HomeScreen(
 
         floatingActionButton = {
 
-            FloatingActionButton(
+           FloatingActionButton(
                 onClick = {
                     navController.navigate(Routes.AddTransaction.route)
-                }
+                },
+                containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.75f)
             ) {
                 Text("+")
             }
@@ -103,12 +108,17 @@ fun HomeScreen(
 
     ) { padding ->
 
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(padding)
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
 
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+
+            contentPadding = PaddingValues(
+                top = 16.dp,
+                bottom = 100.dp
+            )
         ) {
 
             Card(
@@ -217,76 +227,82 @@ fun HomeScreen(
 
             }
 
-            Text(
-                text = "Recent Transactions",
-                style = MaterialTheme.typography.titleMedium
-            )
-
-            if (transactions.isEmpty()) {
+            item {
 
                 Text(
-                    text = "No transactions yet"
+                    text = "Recent Transactions",
+                    style = MaterialTheme.typography.titleMedium
                 )
+            }
+
+           if (transactions.isEmpty()) {
+                item {
+                    Text(
+                        text = "No transactions yet"
+                    )
+                }
+            }
 
             } else {
 
-                transactions.forEach { transaction ->
-
-                    Card(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-
-                            horizontalArrangement = Arrangement.SpaceBetween
+                items(transactions) { transaction ->
+                  item {
+                        Card(
+                            modifier = Modifier.fillMaxWidth()
                         ) {
 
-                            Column {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
 
-                                Text(
-                                    text = transaction.merchant ?: "Unknown",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
 
-                                transaction.bankName?.let {
+                                Column {
 
                                     Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodySmall
+                                        text = transaction.merchant ?: "Unknown",
+                                        style = MaterialTheme.typography.titleMedium
                                     )
+
+                                    transaction.bankName?.let {
+
+                                        Text(
+                                            text = it,
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+
+                                    }
 
                                 }
 
+                                val isDebit =
+                                    transaction.transactionType == "DEBIT"
+
+                                Text(
+
+                                    text =
+                                    if (isDebit)
+                                        "- ${currencyFormatter.format(transaction.amount)}"
+                                    else
+                                        "+ ${currencyFormatter.format(transaction.amount)}",
+
+                                    color =
+                                    if (isDebit)
+                                        Color.Red
+                                    else
+                                        Color(0xFF2E7D32),
+
+                                    style =
+                                    MaterialTheme.typography.titleMedium
+
+                                )
+
                             }
-
-                            val isDebit =
-                                transaction.transactionType == "DEBIT"
-
-                            Text(
-
-                                text =
-                                if (isDebit)
-                                    "- ${currencyFormatter.format(transaction.amount)}"
-                                else
-                                    "+ ${currencyFormatter.format(transaction.amount)}",
-
-                                color =
-                                if (isDebit)
-                                    Color.Red
-                                else
-                                    Color(0xFF2E7D32),
-
-                                style =
-                                MaterialTheme.typography.titleMedium
-
-                            )
-
                         }
-                    }
 
+                    }
                 }
 
             }
