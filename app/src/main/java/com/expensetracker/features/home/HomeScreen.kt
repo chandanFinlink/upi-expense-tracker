@@ -119,26 +119,10 @@ fun HomeScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
 
-                                        Text(
+                     Text(
                         text = "Today's Summary",
                         style = MaterialTheme.typography.titleLarge
                     )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-
-                        Text("Today's Credit")
-
-                        Text(
-                            text = "+ " + currencyFormatter.format(todayCredit ?: 0.0),
-                            color = Color(0xFF2E7D32)
-                        )
-
-                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -152,6 +136,22 @@ fun HomeScreen(
                         Text(
                             text = "- " + currencyFormatter.format(todayDebit ?: 0.0),
                             color = Color.Red
+                        )
+
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text("Today's Credit")
+
+                        Text(
+                            text = "+ " + currencyFormatter.format(todayCredit ?: 0.0),
+                            color = Color(0xFF2E7D32)
                         )
 
                     }
