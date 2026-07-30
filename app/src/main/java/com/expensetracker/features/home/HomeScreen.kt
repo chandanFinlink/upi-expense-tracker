@@ -307,4 +307,5 @@ fun HomeScreen(
                 }
 
             }
+    }
 }
