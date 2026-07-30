@@ -143,4 +143,70 @@ interface TransactionDao {
     """)
     fun getCreditCount(): Flow<Int>
 
+
+    @Query("""
+    SELECT *
+    FROM transactions
+    WHERE date(transactionDate/1000,'unixepoch','localtime')
+    =
+    date('now','localtime')
+    ORDER BY transactionDate DESC
+    """)
+    fun getTodayTransactions(): Flow<List<TransactionEntity>>
+
+
+    @Query("""
+    SELECT *
+    FROM transactions
+    WHERE date(transactionDate/1000,'unixepoch','localtime')
+    =
+    date('now','-1 day','localtime')
+    ORDER BY transactionDate DESC
+    """)
+    fun getYesterdayTransactions(): Flow<List<TransactionEntity>>
+
+
+    @Query("""
+    SELECT *
+    FROM transactions
+    WHERE transactionDate >= :startTime
+    ORDER BY transactionDate DESC
+    """)
+    fun getTransactionsAfter(
+        startTime: Long
+    ): Flow<List<TransactionEntity>>
+
+
+    @Query("""
+    SELECT *
+    FROM transactions
+    WHERE transactionType = :type
+    ORDER BY transactionDate DESC
+    """)
+    fun getTransactionsByType(
+        type: String
+    ): Flow<List<TransactionEntity>>
+
+
+    @Query("""
+    SELECT *
+    FROM transactions
+    WHERE merchant LIKE '%' || :keyword || '%'
+    ORDER BY transactionDate DESC
+    """)
+    fun searchTransactions(
+        keyword: String
+    ): Flow<List<TransactionEntity>>
+
+
+    @Query("""
+    SELECT *
+    FROM transactions
+    WHERE bankName = :bankName
+    ORDER BY transactionDate DESC
+    """)
+    fun getTransactionsByBank(
+        bankName: String
+    ): Flow<List<TransactionEntity>>
+
 }
