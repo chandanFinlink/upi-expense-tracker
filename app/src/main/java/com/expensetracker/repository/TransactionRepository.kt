@@ -55,6 +55,38 @@ class TransactionRepository(
         transactionDao.getCreditCount()
 
 
+    fun getTodayTransactions() =
+         transactionDao.getTodayTransactions()
+
+
+    fun getYesterdayTransactions() =
+        transactionDao.getYesterdayTransactions()
+
+
+    fun getTransactionsAfter(
+        startTime: Long
+    ) =
+        transactionDao.getTransactionsAfter(startTime)
+
+
+    fun getTransactionsByType(
+        type: String
+    ) =
+        transactionDao.getTransactionsByType(type)
+
+
+    fun searchTransactions(
+        keyword: String
+    ) =
+        transactionDao.searchTransactions(keyword)
+
+
+    fun getTransactionsByBank(
+        bankName: String
+    ) =
+        transactionDao.getTransactionsByBank(bankName)
+
+
     suspend fun insertTransaction(
         transaction: TransactionEntity
     ): Long {
