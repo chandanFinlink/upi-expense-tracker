@@ -5,13 +5,14 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.expensetracker.database.entity.TransactionEntity
 import kotlinx.coroutines.flow.Flow
+import androidx.room.OnConflictStrategy
 
 
 @Dao
 interface TransactionDao {
 
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTransaction(
         transaction: TransactionEntity
     ): Long

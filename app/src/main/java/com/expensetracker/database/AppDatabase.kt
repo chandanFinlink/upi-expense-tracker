@@ -21,7 +21,7 @@ import com.expensetracker.database.entity.TransactionEntity
         BudgetEntity::class,
         AppSettingsEntity::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

@@ -1,10 +1,21 @@
 package com.expensetracker.database.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
-    tableName = "transactions"
+    tableName = "transactions",
+    indices = [
+        Index(
+            value = [
+                "smsAddress",
+                "smsBody",
+                "transactionDate"
+            ],
+            unique = true
+        )
+    ]
 )
 data class TransactionEntity(
 

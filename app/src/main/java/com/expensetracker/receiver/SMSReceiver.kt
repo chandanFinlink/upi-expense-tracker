@@ -48,42 +48,21 @@ class SMSReceiver : BroadcastReceiver() {
             messages.forEach { sms ->
 
 
-                val sender =
-                    sms.originatingAddress
+                val sender = sms.originatingAddress
+                val body = sms.messageBody
 
+                CoroutineScope(Dispatchers.IO).launch {
 
-                val body =
-                    sms.messageBody
-
-
-
-               val transaction =
-                UpiSmsParser.parse(
-                    smsBody = body,
-                    sender = sender,
-                    smsTime = sms.timestampMillis
-                )
-
-
-
-                if (transaction != null) {
-
-
-                    CoroutineScope(
-                        Dispatchers.IO
-                    ).launch {
-
-
-                       smsProcessingService.processSms(
-                            sender = sender,
-                            body = body,
-                            smsTime = sms.timestampMillis
-                        )
-
-
-                    }
-
+                    smsProcessingService.processSms(
+                        sender = sender,
+                        body = body,
+                        smsTime = sms.timestampMillis
+                    )
                 }
+
+
+
+              
 
 
             }
