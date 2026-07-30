@@ -87,6 +87,27 @@ interface TransactionDao {
     @Query("""
     SELECT SUM(amount)
     FROM transactions
+    WHERE transactionType='CREDIT'
+    AND date(transactionDate/1000,'unixepoch','localtime')
+    =
+    date('now','localtime')
+    """)
+    fun getTodayCredit(): Flow<Double?>
+
+    @Query("""
+    SELECT SUM(amount)
+    FROM transactions
+    WHERE transactionType='DEBIT'
+    AND date(transactionDate/1000,'unixepoch','localtime')
+    =
+    date('now','localtime')
+    """)
+    fun getTodayDebit(): Flow<Double?>
+
+
+    @Query("""
+    SELECT SUM(amount)
+    FROM transactions
     WHERE transactionType='DEBIT'
     AND strftime('%Y-%m',transactionDate/1000,'unixepoch','localtime')
     =

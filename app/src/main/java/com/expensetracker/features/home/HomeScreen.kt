@@ -28,6 +28,11 @@ import com.expensetracker.viewmodel.ViewModelFactory
 import java.text.NumberFormat
 import java.util.Locale
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.SpaceBetween
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -49,6 +54,15 @@ fun HomeScreen(
 
     val todayExpense by
         viewModel.todayExpense.collectAsState()
+
+    val todayCredit by
+          viewModel.todayCredit.collectAsState()
+
+    val todayDebit by
+             viewModel.todayDebit.collectAsState()
+
+    val netToday by
+             viewModel.netToday.collectAsState()
 
     val monthlyExpense by
         viewModel.monthlyExpense.collectAsState()
@@ -106,53 +120,101 @@ fun HomeScreen(
                     modifier = Modifier.padding(16.dp)
                 ) {
 
-                    Text(
-                        text = "This Month",
-                        style = MaterialTheme.typography.titleMedium
+                                        Text(
+                        text = "Today's Summary",
+                        style = MaterialTheme.typography.titleLarge
                     )
 
-                    Text(
-                        text = currencyFormatter.format(monthlyExpense ?: 0.0),
-                        style = MaterialTheme.typography.headlineMedium
-                    )
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                    Spacer(
-                        modifier = Modifier.height(16.dp)
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
 
-                    Text(
-                        text = "Today's Expense"
-                    )
+                        Text("Today's Credit")
 
-                    Text(
-                        text = currencyFormatter.format(todayExpense ?: 0.0)
-                    )
+                        Text(
+                            text = "+ " + currencyFormatter.format(todayCredit ?: 0.0),
+                            color = Color(0xFF2E7D32)
+                        )
 
-                    Spacer(
-                        modifier = Modifier.height(16.dp)
-                    )
+                    }
 
-                    Text(
-                        text = "Total Expense"
-                    )
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    Text(
-                        text = currencyFormatter.format(totalExpense ?: 0.0)
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
 
-                    Spacer(
-                        modifier = Modifier.height(16.dp)
-                    )
+                        Text("Today's Debit")
 
-                    Text(
-                        text = "Total Transactions"
-                    )
+                        Text(
+                            text = "- " + currencyFormatter.format(todayDebit ?: 0.0),
+                            color = Color.Red
+                        )
 
-                    Text(
-                        text = transactionCount.toString()
-                    )
+                    }
 
-                }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text(
+                            "Net Amount",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Text(
+                            text =
+                            if ((netToday ?: 0.0) >= 0)
+                                "+ " + currencyFormatter.format(netToday ?: 0.0)
+                            else
+                                "- " + currencyFormatter.format(kotlin.math.abs(netToday ?: 0.0)),
+
+                            color =
+                            if ((netToday ?: 0.0) >= 0)
+                                Color(0xFF2E7D32)
+                            else
+                                Color.Red,
+
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text("This Month")
+
+                        Text(
+                            currencyFormatter.format(monthlyExpense ?: 0.0)
+                        )
+
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text("Total Transactions")
+
+                        Text(transactionCount.toString())
+
+                    }                  
+                }                  
 
             }
 

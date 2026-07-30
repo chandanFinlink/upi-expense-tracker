@@ -41,6 +41,38 @@ class HomeViewModel(
             0.0
         )
 
+    val todayCredit =
+    transactionRepository
+        .getTodayCredit()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            0.0
+        )
+
+    val todayDebit =
+        transactionRepository
+            .getTodayDebit()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                0.0
+            )
+
+    val netToday =
+        kotlinx.coroutines.flow.combine(
+            todayCredit,
+            todayDebit
+        ) { credit, debit ->
+
+            (credit ?: 0.0) - (debit ?: 0.0)
+
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            0.0
+        )
+
     val monthlyExpense =
         transactionRepository
             .getMonthlyExpense()

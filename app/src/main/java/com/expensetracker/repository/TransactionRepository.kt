@@ -33,6 +33,12 @@ class TransactionRepository(
     fun getTodayExpense() =
     transactionDao.getTodayExpense()
 
+    fun getTodayCredit() =
+    transactionDao.getTodayCredit()
+
+    fun getTodayDebit() =
+    transactionDao.getTodayDebit()
+
     fun getMonthlyExpense() =
         transactionDao.getMonthlyExpense()
 
