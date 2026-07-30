@@ -232,14 +232,60 @@ fun HomeScreen(
 
                 transactions.forEach { transaction ->
 
-                    val merchant =
-                        transaction.merchant ?: "Unknown"
+                    Card(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
 
-                    Text(
-                        text = merchant +
-                                " • " +
-                                currencyFormatter.format(transaction.amount)
-                    )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+
+                            Column {
+
+                                Text(
+                                    text = transaction.merchant ?: "Unknown",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+
+                                transaction.bankName?.let {
+
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+
+                                }
+
+                            }
+
+                            val isDebit =
+                                transaction.transactionType == "DEBIT"
+
+                            Text(
+
+                                text =
+                                if (isDebit)
+                                    "- ${currencyFormatter.format(transaction.amount)}"
+                                else
+                                    "+ ${currencyFormatter.format(transaction.amount)}",
+
+                                color =
+                                if (isDebit)
+                                    Color.Red
+                                else
+                                    Color(0xFF2E7D32),
+
+                                style =
+                                MaterialTheme.typography.titleMedium
+
+                            )
+
+                        }
+                    }
 
                 }
 
