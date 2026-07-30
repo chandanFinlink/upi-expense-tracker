@@ -29,11 +29,13 @@ class MainActivity : ComponentActivity() {
         val application = application as ExpenseTrackerApplication
 
         lifecycleScope.launch {
+
             SmsImporter(
                 context = this@MainActivity,
                 repository = application.transactionRepository
-            ).importInbox()
-
+            ).importLastDays(
+                days = 90
+            )
         }
 
         setContent {
