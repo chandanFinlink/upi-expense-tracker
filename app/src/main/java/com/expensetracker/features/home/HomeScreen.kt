@@ -121,110 +121,113 @@ fun HomeScreen(
             )
         ) {
 
-            Card(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            item {
 
-                Column(
-                    modifier = Modifier.padding(16.dp)
+                Card(
+                    modifier = Modifier.fillMaxWidth()
                 ) {
 
-                     Text(
-                        text = "Today's Summary",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-
-                        Text("Today's Debit")
-
-                        Text(
-                            text = "- " + currencyFormatter.format(todayDebit ?: 0.0),
-                            color = Color.Red
-                        )
-
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-
-                        Text("Today's Credit")
-
-                        Text(
-                            text = "+ " + currencyFormatter.format(todayCredit ?: 0.0),
-                            color = Color(0xFF2E7D32)
-                        )
-
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Column(
+                        modifier = Modifier.padding(16.dp)
                     ) {
 
                         Text(
-                            "Net Amount",
-                            style = MaterialTheme.typography.titleMedium
+                            text = "Today's Summary",
+                            style = MaterialTheme.typography.titleLarge
                         )
 
-                        Text(
-                            text =
-                            if ((netToday ?: 0.0) >= 0)
-                                "+ " + currencyFormatter.format(netToday ?: 0.0)
-                            else
-                                "- " + currencyFormatter.format(kotlin.math.abs(netToday ?: 0.0)),
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                            color =
-                            if ((netToday ?: 0.0) >= 0)
-                                Color(0xFF2E7D32)
-                            else
-                                Color.Red,
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
 
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                            Text("Today's Debit")
 
-                    }
+                            Text(
+                                text = "- " + currencyFormatter.format(todayDebit ?: 0.0),
+                                color = Color.Red
+                            )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                        Text("This Month")
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
 
-                        Text(
-                            currencyFormatter.format(monthlyExpense ?: 0.0)
-                        )
+                            Text("Today's Credit")
 
-                    }
+                            Text(
+                                text = "+ " + currencyFormatter.format(todayCredit ?: 0.0),
+                                color = Color(0xFF2E7D32)
+                            )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                        }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                        Text("Total Transactions")
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
 
-                        Text(transactionCount.toString())
+                            Text(
+                                "Net Amount",
+                                style = MaterialTheme.typography.titleMedium
+                            )
 
+                            Text(
+                                text =
+                                if ((netToday ?: 0.0) >= 0)
+                                    "+ " + currencyFormatter.format(netToday ?: 0.0)
+                                else
+                                    "- " + currencyFormatter.format(kotlin.math.abs(netToday ?: 0.0)),
+
+                                color =
+                                if ((netToday ?: 0.0) >= 0)
+                                    Color(0xFF2E7D32)
+                                else
+                                    Color.Red,
+
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+
+                            Text("This Month")
+
+                            Text(
+                                currencyFormatter.format(monthlyExpense ?: 0.0)
+                            )
+
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+
+                            Text("Total Transactions")
+
+                            Text(transactionCount.toString())
+
+                        }                  
                     }                  
-                }                  
 
+                }
             }
 
             item {
@@ -236,20 +239,18 @@ fun HomeScreen(
             }
 
            if (transactions.isEmpty()) {
+
                 item {
-                    Text(
-                        text = "No transactions yet"
-                    )
+                    Text( text = "No transactions yet")
                 }
-            }
 
             } else {
 
-                items(transactions) { transaction ->
-                  item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
+              items(transactions) { transaction ->
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
 
                             Row(
                                 modifier = Modifier
@@ -306,6 +307,4 @@ fun HomeScreen(
                 }
 
             }
-
-        }
 }
