@@ -55,9 +55,6 @@ fun HomeScreen(
     val totalExpense by
         viewModel.totalExpense.collectAsState()
 
-    val todayExpense by
-        viewModel.todayExpense.collectAsState()
-
     val todayCredit by
           viewModel.todayCredit.collectAsState()
 
@@ -109,203 +106,201 @@ fun HomeScreen(
     ) { padding ->
 
         LazyColumn(
-            modifier = Modifier
-                .padding(padding)
-                .padding(horizontal = 16.dp),
+        modifier = Modifier
+            .padding(padding)
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(
+            top = 16.dp,
+            bottom = 100.dp
+        )
+    ) {
 
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+        item {
 
-            contentPadding = PaddingValues(
-                top = 16.dp,
-                bottom = 100.dp
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+
+                    Text(
+                        text = "Today's Summary",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Today's Debit")
+
+                        Text(
+                            text = "- ${currencyFormatter.format(todayDebit ?: 0.0)}",
+                            color = Color.Red
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Today's Credit")
+
+                        Text(
+                            text = "+ ${currencyFormatter.format(todayCredit ?: 0.0)}",
+                            color = Color(0xFF2E7D32)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text(
+                            "Net Amount",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Text(
+                            text =
+                            if ((netToday ?: 0.0) >= 0)
+                                "+ ${currencyFormatter.format(netToday ?: 0.0)}"
+                            else
+                                "- ${currencyFormatter.format(kotlin.math.abs(netToday ?: 0.0))}",
+
+                            color =
+                            if ((netToday ?: 0.0) >= 0)
+                                Color(0xFF2E7D32)
+                            else
+                                Color.Red,
+
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text("This Month")
+
+                        Text(
+                            currencyFormatter.format(monthlyExpense ?: 0.0)
+                        )
+
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text("Total Transactions")
+
+                        Text(transactionCount.toString())
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        item {
+
+            Text(
+                text = "Recent Transactions",
+                style = MaterialTheme.typography.titleMedium
             )
-        ) {
+
+        }
+
+        if (transactions.isEmpty()) {
 
             item {
+
+                Text("No transactions yet")
+
+            }
+
+        } else {
+
+            items(transactions) { transaction ->
 
                 Card(
                     modifier = Modifier.fillMaxWidth()
                 ) {
 
-                    Column(
-                        modifier = Modifier.padding(16.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
 
-                        Text(
-                            text = "Today's Summary",
-                            style = MaterialTheme.typography.titleLarge
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-
-                            Text("Today's Debit")
-
-                            Text(
-                                text = "- " + currencyFormatter.format(todayDebit ?: 0.0),
-                                color = Color.Red
-                            )
-
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-
-                            Text("Today's Credit")
-
-                            Text(
-                                text = "+ " + currencyFormatter.format(todayCredit ?: 0.0),
-                                color = Color(0xFF2E7D32)
-                            )
-
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                        Column(
+                            modifier = Modifier.weight(1f)
                         ) {
 
                             Text(
-                                "Net Amount",
+                                text = transaction.merchant ?: "Unknown",
                                 style = MaterialTheme.typography.titleMedium
                             )
 
-                            Text(
-                                text =
-                                if ((netToday ?: 0.0) >= 0)
-                                    "+ " + currencyFormatter.format(netToday ?: 0.0)
-                                else
-                                    "- " + currencyFormatter.format(kotlin.math.abs(netToday ?: 0.0)),
-
-                                color =
-                                if ((netToday ?: 0.0) >= 0)
-                                    Color(0xFF2E7D32)
-                                else
-                                    Color.Red,
-
-                                style = MaterialTheme.typography.titleMedium
-                            )
-
-                        }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-
-                            Text("This Month")
-
-                            Text(
-                                currencyFormatter.format(monthlyExpense ?: 0.0)
-                            )
-
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-
-                            Text("Total Transactions")
-
-                            Text(transactionCount.toString())
-
-                        }                  
-                    }                  
-
-                }
-            }
-
-            item {
-
-                Text(
-                    text = "Recent Transactions",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-           if (transactions.isEmpty()) {
-
-                item {
-                    Text( text = "No transactions yet")
-                }
-
-            } else {
-
-              items(transactions) { transaction ->
-
-                    Card(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-
-                                Column {
-
-                                    Text(
-                                        text = transaction.merchant ?: "Unknown",
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-
-                                    transaction.bankName?.let {
-
-                                        Text(
-                                            text = it,
-                                            style = MaterialTheme.typography.bodySmall
-                                        )
-
-                                    }
-
-                                }
-
-                                val isDebit =
-                                    transaction.transactionType == "DEBIT"
+                            transaction.bankName?.let {
 
                                 Text(
-
-                                    text =
-                                    if (isDebit)
-                                        "- ${currencyFormatter.format(transaction.amount)}"
-                                    else
-                                        "+ ${currencyFormatter.format(transaction.amount)}",
-
-                                    color =
-                                    if (isDebit)
-                                        Color.Red
-                                    else
-                                        Color(0xFF2E7D32),
-
-                                    style =
-                                    MaterialTheme.typography.titleMedium
-
+                                    text = it,
+                                    style = MaterialTheme.typography.bodySmall
                                 )
 
                             }
+
                         }
 
+                        val isDebit =
+                            transaction.transactionType == "DEBIT"
+
+                        Text(
+                            text =
+                            if (isDebit)
+                                "- ${currencyFormatter.format(transaction.amount)}"
+                            else
+                                "+ ${currencyFormatter.format(transaction.amount)}",
+
+                            color =
+                            if (isDebit)
+                                Color.Red
+                            else
+                                Color(0xFF2E7D32),
+
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
                     }
+
                 }
 
             }
+
+        }
+
     }
 }
