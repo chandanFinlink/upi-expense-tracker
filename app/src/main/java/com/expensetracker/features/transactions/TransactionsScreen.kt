@@ -30,6 +30,11 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen() {
@@ -46,6 +51,9 @@ fun TransactionsScreen() {
 
     val transactions by
         viewModel.transactions.collectAsState()
+
+    val selectedFilter by
+         viewModel.currentFilter.collectAsState()
 
     val currency =
         NumberFormat.getCurrencyInstance(
@@ -72,12 +80,43 @@ fun TransactionsScreen() {
 
     ) { padding ->
 
+       Column(
+    modifier = Modifier
+        .fillMaxSize()
+        .padding(padding)
+) {
+
+    Row(
+        modifier = Modifier
+            .horizontalScroll(rememberScrollState())
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+
+        TransactionsViewModel.Filter.entries.forEach { filter ->
+
+            AssistChip(
+
+                onClick = {
+                    viewModel.setFilter(filter)
+                },
+
+                label = {
+                    Text(filter.name.replace("_", " "))
+                }
+
+            )
+
+        }
+
+    }
+
         if (transactions.isEmpty()) {
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding)
                     .padding(16.dp)
             ) {
 
@@ -88,69 +127,71 @@ fun TransactionsScreen() {
         } else {
 
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
+                modifier = Modifier.fillMaxSize()
             ) {
 
                 items(
-                        items = transactions,
-                        key = { it.id }
-                    ) { transaction ->
+                    items = transactions,
+                    key = { it.id }
+                ) { transaction ->
 
-                    Card(
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 12.dp,
-                                vertical = 6.dp
-                            )
-                    ) {
+                    // KEEP YOUR EXISTING CARD EXACTLY AS IT IS
 
-                        Column(
-                            modifier = Modifier.padding(16.dp)
+                        Card(
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = 12.dp,
+                                    vertical = 6.dp
+                                )
                         ) {
 
-                            Text(
-                                text = transaction.merchant ?: "Unknown",
-                                style = MaterialTheme.typography.titleMedium
-                            )
+                            Column(
+                                modifier = Modifier.padding(16.dp)
+                            ) {
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = transaction.merchant ?: "Unknown",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
 
-                            Text(
-                                text = formatter.format(
-                                    Date(transaction.transactionDate)
-                                ),
-                                style = MaterialTheme.typography.bodySmall
-                            )
+                                Spacer(modifier = Modifier.height(8.dp))
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = formatter.format(
+                                        Date(transaction.transactionDate)
+                                    ),
+                                    style = MaterialTheme.typography.bodySmall
+                                )
 
-                            Text(
-                                text = transaction.bankName ?: "Unknown Bank",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+                                Spacer(modifier = Modifier.height(8.dp))
 
-                            Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = transaction.bankName ?: "Unknown Bank",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
 
-                            Text(
-                                text = currency.format(transaction.amount),
-                                style = MaterialTheme.typography.headlineSmall,
-                                color =
-                                    if (transaction.transactionType == "DEBIT")
-                                        MaterialTheme.colorScheme.error
-                                    else
-                                        MaterialTheme.colorScheme.primary
-                            )
+                                Spacer(modifier = Modifier.height(12.dp))
 
-                            AssistChip(
-                                onClick = { },
-                                label = {
-                                    Text(transaction.transactionType)
-                                }
-                            )
+                                Text(
+                                    text = currency.format(transaction.amount),
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color =
+                                        if (transaction.transactionType == "DEBIT")
+                                            MaterialTheme.colorScheme.error
+                                        else
+                                            MaterialTheme.colorScheme.primary
+                                )
 
+                                AssistChip(
+                                    onClick = { },
+                                    label = {
+                                        Text(transaction.transactionType)
+                                    }
+                                )
+
+                            }
                         }
+
                     }
 
                 }
@@ -160,5 +201,4 @@ fun TransactionsScreen() {
         }
 
     }
-
 }
