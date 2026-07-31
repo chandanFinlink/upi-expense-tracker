@@ -48,6 +48,56 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 
+import java.util.LinkedHashMap
+import androidx.compose.foundation.layout.fillMaxWidth
+
+
+
+private fun getHeader( time: Long ): String {
+
+    val today =
+        SimpleDateFormat(
+            "yyyyMMdd",
+            Locale.getDefault()
+        ).format(Date())
+
+    val yesterday =
+        SimpleDateFormat(
+            "yyyyMMdd",
+            Locale.getDefault()
+        ).format(
+            Date(
+                System.currentTimeMillis() - 86400000L
+            )
+        )
+
+    val date =
+        SimpleDateFormat(
+            "yyyyMMdd",
+            Locale.getDefault()
+        ).format(Date(time))
+
+    return when (date) {
+
+        today -> "Today"
+
+        yesterday -> "Yesterday"
+
+        else -> SimpleDateFormat(
+            "dd MMM yyyy",
+            Locale.getDefault()
+        ).format(Date(time))
+
+    }
+
+}
+
+private fun groupTransactions( list: List<com.expensetracker.database.entity.TransactionEntity> ): LinkedHashMap<String, List<com.expensetracker.database.entity.TransactionEntity>> {
+    return LinkedHashMap( list.groupBy { getHeader(it.transactionDate) })
+}
+
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen() {
@@ -64,6 +114,9 @@ fun TransactionsScreen() {
 
     val transactions by
         viewModel.transactions.collectAsState()
+
+    val groupedTransactions =
+            groupTransactions(transactions)
 
     val selectedFilter by
          viewModel.currentFilter.collectAsState()

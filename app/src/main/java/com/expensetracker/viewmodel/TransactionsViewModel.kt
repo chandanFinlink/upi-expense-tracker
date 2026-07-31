@@ -11,8 +11,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import java.util.Calendar
 
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.asStateFlow
+
 
 class TransactionsViewModel(
     private val repository: TransactionRepository
