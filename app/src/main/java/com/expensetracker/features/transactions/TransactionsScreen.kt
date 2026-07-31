@@ -37,9 +37,16 @@ import androidx.compose.foundation.layout.Arrangement
 
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +67,11 @@ fun TransactionsScreen() {
 
     val selectedFilter by
          viewModel.currentFilter.collectAsState()
+
+    var search by remember {
+        mutableStateOf("")
+    }
+
 
     val currency =
         NumberFormat.getCurrencyInstance(
@@ -91,6 +103,49 @@ fun TransactionsScreen() {
         .fillMaxSize()
         .padding(padding)
 ) {
+
+        OutlinedTextField(
+
+        value = search,
+
+        onValueChange = {
+
+            search = it
+            viewModel.setSearchQuery(it)
+
+        },
+
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 12.dp,
+                vertical = 8.dp
+            ),
+
+        placeholder = {
+
+            Text("Search merchant or bank")
+
+        },
+
+        singleLine = true,
+
+        leadingIcon = {
+
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null
+            )
+
+        },
+
+        colors = OutlinedTextFieldDefaults.colors()
+
+    )
+
+    Spacer(
+        modifier = Modifier.height(8.dp)
+    )
 
     Row(
         modifier = Modifier
@@ -177,9 +232,10 @@ fun TransactionsScreen() {
                                 modifier = Modifier.padding(16.dp)
                             ) {
 
-                                Text(
-                                    text = transaction.merchant ?: "Unknown",
-                                    style = MaterialTheme.typography.titleMedium
+                               Text(
+                                    text = transaction.merchant ?: "Unknown Merchant",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    maxLines = 1
                                 )
 
                                 Spacer(modifier = Modifier.height(8.dp))
@@ -201,7 +257,11 @@ fun TransactionsScreen() {
                                 Spacer(modifier = Modifier.height(12.dp))
 
                                 Text(
-                                    text = currency.format(transaction.amount),
+                                    text = if (transaction.transactionType == "DEBIT")
+                                            "- ${currency.format(transaction.amount)}"
+                                        else
+                                            "+ ${currency.format(transaction.amount)}",
+
                                     style = MaterialTheme.typography.headlineSmall,
                                     color =
                                         if (transaction.transactionType == "DEBIT")
@@ -210,11 +270,10 @@ fun TransactionsScreen() {
                                             MaterialTheme.colorScheme.primary
                                 )
 
-                                AssistChip(
+                               FilterChip(
+                                    selected = false,
                                     onClick = { },
-                                    label = {
-                                        Text(transaction.transactionType)
-                                    }
+                                    label = { Text( transaction.transactionType ) }
                                 )
 
                             }
