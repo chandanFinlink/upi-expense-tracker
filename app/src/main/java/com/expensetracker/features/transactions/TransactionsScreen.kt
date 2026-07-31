@@ -35,6 +35,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
 
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TransactionsScreen() {
@@ -96,17 +102,39 @@ fun TransactionsScreen() {
 
         TransactionsViewModel.Filter.entries.forEach { filter ->
 
-            AssistChip(
+           FilterChip(
 
-                onClick = {
-                    viewModel.setFilter(filter)
-                },
+            selected = selectedFilter == filter,
 
-                label = {
-                    Text(filter.name.replace("_", " "))
+            onClick = {
+                viewModel.setFilter(filter)
+            },
+
+            label = {
+                Text(
+                    filter.name
+                        .replace("_", " ")
+                        .lowercase()
+                        .replaceFirstChar { it.uppercase() }
+                )
+            },
+
+            leadingIcon = {
+
+                if (selectedFilter == filter) {
+
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = null
+                    )
+
                 }
 
-            )
+            },
+
+            colors = FilterChipDefaults.filterChipColors()
+
+        )
 
         }
 
