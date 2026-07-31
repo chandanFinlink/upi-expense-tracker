@@ -11,6 +11,9 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import java.util.Calendar
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+
 class TransactionsViewModel(
     private val repository: TransactionRepository
 ) : ViewModel() {
@@ -31,64 +34,76 @@ class TransactionsViewModel(
     private val selectedFilter =
         MutableStateFlow(Filter.ALL)
 
+    private val searchQuery =
+         MutableStateFlow("")
+
     val currentFilter: StateFlow<Filter> =
         selectedFilter
 
     val transactions =
-        selectedFilter
-            .flatMapLatest { filter ->
+    combine(
+        selectedFilter,
+        searchQuery
+    ) { filter, query ->
 
-                when (filter) {
+        Pair(filter, query)
 
-                    Filter.ALL ->
-                        repository.getTransactions()
+    }
+    .flatMapLatest { (filter, query) ->
 
-                    Filter.TODAY ->
-                        repository.getTodayTransactions()
+        if (query.isNotBlank()) {
 
-                    Filter.YESTERDAY ->
-                        repository.getYesterdayTransactions()
+            repository.searchTransactions(query)
 
-                    Filter.LAST_7_DAYS ->
-                        repository.getTransactionsAfter(
-                            getDaysAgo(7)
-                        )
+        } else {
 
-                    Filter.LAST_30_DAYS ->
-                        repository.getTransactionsAfter(
-                            getDaysAgo(30)
-                        )
+            when (filter) {
 
-                    Filter.LAST_90_DAYS ->
-                        repository.getTransactionsAfter(
-                            getDaysAgo(90)
-                        )
+                Filter.ALL ->
+                    repository.getTransactions()
 
-                    Filter.DEBIT ->
-                        repository.getTransactionsByType(
-                            "DEBIT"
-                        )
+                Filter.TODAY ->
+                    repository.getTodayTransactions()
 
-                    Filter.CREDIT ->
-                        repository.getTransactionsByType(
-                            "CREDIT"
-                        )
+                Filter.YESTERDAY ->
+                    repository.getYesterdayTransactions()
 
-                }
+                Filter.LAST_7_DAYS ->
+                    repository.getTransactionsAfter(
+                        getDaysAgo(7)
+                    )
+
+                Filter.LAST_30_DAYS ->
+                    repository.getTransactionsAfter(
+                        getDaysAgo(30)
+                    )
+
+                Filter.LAST_90_DAYS ->
+                    repository.getTransactionsAfter(
+                        getDaysAgo(90)
+                    )
+
+                Filter.DEBIT ->
+                    repository.getTransactionsByType("DEBIT")
+
+                Filter.CREDIT ->
+                    repository.getTransactionsByType("CREDIT")
 
             }
-            .stateIn(
-                viewModelScope,
-                SharingStarted.WhileSubscribed(5000),
-                emptyList<TransactionEntity>()
-            )
 
-    fun setFilter(
-        filter: Filter
-    ) {
+        }
 
+    }
+    .stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
+
+
+    fun setFilter( filter: Filter ) {
         selectedFilter.value = filter
-
     }
 
     private fun getDaysAgo(
@@ -104,6 +119,14 @@ class TransactionsViewModel(
 
         return calendar.timeInMillis
 
+    }
+
+    fun setSearchQuery(query: String) {
+            searchQuery.value = query
+    }
+
+    fun clearSearch() {
+        searchQuery.value = ""
     }
 
 }
