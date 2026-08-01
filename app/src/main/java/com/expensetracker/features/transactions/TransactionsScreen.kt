@@ -43,6 +43,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -186,7 +187,7 @@ fun TransactionsScreen() {
         leadingIcon = {
 
             Icon(
-                imageVector = Icons.Default.Search,
+                imageVector =Icons.Filled.Search,
                 contentDescription = null
             )
 
@@ -232,7 +233,7 @@ fun TransactionsScreen() {
                 if (selectedFilter == filter) {
 
                     Icon(
-                        imageVector = Icons.Default.Check,
+                        imageVector = Icons.Filled.Check,
                         contentDescription = null
                     )
 
