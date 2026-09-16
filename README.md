@@ -17,6 +17,17 @@ Stack: Expo (dev-client) + TypeScript + expo-sqlite + React Navigation + Zustand
 **Not yet done (later steps):** SQLite data layer, real screens, native SMS
 module implementation, platform-conditional UI, CI.
 
+## What's actually been verified vs. not
+
+This scaffold was tested for real, not just written and assumed correct:
+
+- ✅ `npm install` — resolves cleanly, `package-lock.json` included (needed for `npm ci` in CI)
+- ✅ `tsc --noEmit` — passes (caught and fixed a real type-widening bug in `theme/colors.ts`)
+- ✅ `expo prebuild --platform android` — runs clean, no errors/warnings (caught and fixed two real bugs: `expo-sqlite` wrongly listed as a config plugin in `app.json`, causing a crash; missing `expo-system-ui` dependency needed for `userInterfaceStyle: automatic`)
+- ✅ App icon / adaptive icon assets exist (`assets/`) — `app.json` originally referenced files that didn't exist, which would have failed prebuild
+- ❌ **Not verified**: the actual `./gradlew assembleDebug` Gradle build. This sandbox can't reach Google's Maven repo (`dl.google.com`), which the Android Gradle Plugin requires — that step can only be validated on GitHub Actions' runners (which have full internet) or your own machine. If it fails there, share the error and we'll fix it before moving on.
+- ⚠️ `npm audit` reports 42 vulnerabilities (mostly in old transitive deps from Expo/RN tooling itself, not your code) — normal for this ecosystem, worth a `npm audit fix` pass later but not a Step 1 blocker.
+
 ## Running this (on your own machine — this sandbox has no Android/iOS SDKs)
 
 ```bash

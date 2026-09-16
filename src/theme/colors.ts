@@ -46,7 +46,27 @@ export const palette = {
   midnight700: "#1F2937",
 } as const;
 
-export const lightColors = {
+export interface ThemeColors {
+  background: string;
+  surface: string;
+  surfaceAlt: string;
+  border: string;
+  textPrimary: string;
+  textSecondary: string;
+  textOnPrimary: string;
+  primary: string;
+  primaryPressed: string;
+  primaryMuted: string;
+  credit: string;
+  creditMuted: string;
+  debit: string;
+  debitMuted: string;
+  warning: string;
+  warningMuted: string;
+  tabInactive: string;
+}
+
+export const lightColors: ThemeColors = {
   background: palette.slate50,
   surface: "#FFFFFF",
   surfaceAlt: palette.slate100,
@@ -70,7 +90,7 @@ export const lightColors = {
   tabInactive: palette.slate400,
 };
 
-export const darkColors = {
+export const darkColors: ThemeColors = {
   background: palette.midnight900,
   surface: palette.midnight800,
   surfaceAlt: palette.midnight700,
@@ -93,5 +113,3 @@ export const darkColors = {
 
   tabInactive: palette.slate500,
 };
-
-export type ThemeColors = typeof lightColors;

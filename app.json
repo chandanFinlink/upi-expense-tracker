@@ -18,9 +18,10 @@
       "package": "com.expensetracker.rn",
       "permissions": ["READ_SMS", "RECEIVE_SMS"],
       "adaptiveIcon": {
-        "backgroundColor": "#F8FAFC"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4F46E5"
       }
     },
-    "plugins": ["expo-dev-client", "expo-sqlite"]
+    "plugins": ["expo-dev-client"]
   }
 }
