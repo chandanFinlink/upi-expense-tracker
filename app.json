@@ -1,0 +1,26 @@
+{
+  "expo": {
+    "name": "UPI Expense Tracker",
+    "slug": "upi-expense-tracker-rn",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#F8FAFC"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.expensetracker.rn"
+    },
+    "android": {
+      "package": "com.expensetracker.rn",
+      "permissions": ["READ_SMS", "RECEIVE_SMS"],
+      "adaptiveIcon": {
+        "backgroundColor": "#F8FAFC"
+      }
+    },
+    "plugins": ["expo-dev-client", "expo-sqlite"]
+  }
+}

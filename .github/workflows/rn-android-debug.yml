@@ -1,0 +1,64 @@
+name: RN Android Debug APK
+
+# Builds a debug APK from the Expo React Native rewrite (rn-app/).
+# This is separate from the existing .github/workflows/android.yml, which
+# still builds the original native Kotlin app — keep both during the
+# transition, remove the old one once the rewrite fully replaces it.
+
+on:
+  push:
+    branches:
+      - feature/react-native-rewrite
+    paths:
+      - "rn-app/**"
+      - ".github/workflows/rn-android-debug.yml"
+
+  pull_request:
+    paths:
+      - "rn-app/**"
+
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: rn-app
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: rn-app/package-lock.json
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Expo prebuild (generate native android/ project)
+        run: npx expo prebuild --platform android --non-interactive
+
+      - name: Make Gradle executable
+        run: chmod +x android/gradlew
+
+      - name: Build Debug APK
+        working-directory: rn-app/android
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: rn-app-debug
+          path: rn-app/android/app/build/outputs/apk/debug/*.apk
